@@ -1,0 +1,41 @@
+/* src/index.css */
+
+/* 1) Ajustes globales */
+body {
+  margin: 0;
+  background-color: #f8f9fa; /* gris muy claro */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #212529;
+}
+
+/* 2) Clases para estilizar botones rosas (btn-primary-custom) */
+.btn-primary-custom {
+  background-color: #e11d48;
+  border-color: #e11d48;
+  color: #fff;
+}
+.btn-primary-custom:hover {
+  background-color: #c21f3a;
+  border-color: #c21f3a;
+}
+
+/* 3) Subtítulo gris más suave */
+.text-subtitle {
+  font-size: 1rem;
+  color: #6c757d; /* gris Bootstrap */
+  margin-bottom: 1.5rem;
+}
+
+/* 4) Pequeño margen inferior en los enlaces de ayuda */
+.text-link-small {
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+/* 5) Card container centrado verticalmente en pantalla */
+.full-height-center {
+  min-height: 100vh; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

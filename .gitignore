@@ -1,0 +1,34 @@
+# Dependencias
+node_modules/
+
+# Salidas de compilación
+dist/
+build/
+
+# Archivos de entorno
+.env
+.env.*
+
+# Cache de Vite y herramientas
+.vite/
+.cache/
+coverage/
+
+# Configuración de sistema/macOS/Windows
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Archivos editor/IDE
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Otros (si usas yarn, pnpm, etc.)
+.yarn/
+.pnpm-debug.log*
