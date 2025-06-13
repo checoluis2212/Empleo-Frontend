@@ -1,89 +1,66 @@
-import React, { useEffect, useState } from 'react';
-import { useAuth } from '../context/AuthContext.jsx';
+// src/pages/RecruiterApplications.jsx
+import React from "react";
+import { useAuth } from "../context/AuthContext.jsx";
 
 export default function RecruiterApplications() {
-  const { token } = useAuth();
-  const [apps, setApps] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { token, role } = useAuth();
+  const [apps, setApps] = React.useState([]);
+  const [isLoading, setIsLoading] = React.useState(true);
 
-  // Carga postulaciones recibidas (de las vacantes del recruiter)
-  useEffect(() => {
+  React.useEffect(() => {
+    if (role !== "RECRUITER") return;
     async function fetchApps() {
-      setLoading(true);
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/applications/recruiter`,
-        {
-          headers: { Authorization: 'Bearer ' + token }
-        }
-      );
-      const data = await res.json();
-      setApps(Array.isArray(data) ? data : []);
-      setLoading(false);
-    }
-    if (token) fetchApps();
-  }, [token]);
-
-  // Cambiar estado de postulación
-  const updateStatus = async (id, status) => {
-    const res = await fetch(
-      `${import.meta.env.VITE_API_URL}/api/applications/${id}`,
-      {
-        method: 'PATCH',
+      setIsLoading(true);
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/applications/recruiter`, {
         headers: {
-          'Content-Type': 'application/json',
-          Authorization: 'Bearer ' + token
+          Authorization: "Bearer " + token,
         },
-        body: JSON.stringify({ status })
+      });
+      if (res.ok) {
+        setApps(await res.json());
+      } else {
+        setApps([]);
       }
-    );
-    if (res.ok) {
-      setApps(apps => apps.map(a => a.id === id ? { ...a, status } : a));
-    } else {
-      alert('Error al cambiar estado');
+      setIsLoading(false);
     }
-  };
+    fetchApps();
+  }, [token, role]);
 
-  if (loading) return <p>Cargando postulaciones…</p>;
-  if (!apps.length) return <p>No hay postulaciones recibidas.</p>;
+  if (role !== "RECRUITER") {
+    return <div>No tienes permiso para ver esto.</div>;
+  }
+  if (isLoading) return <div>Cargando postulaciones...</div>;
+  if (!apps.length) return <div>No hay postulaciones recibidas.</div>;
 
   return (
     <div>
-      <h2>Postulaciones Recibidas</h2>
-      <table className="table">
+      <h3>Postulaciones recibidas</h3>
+      <table className="table table-bordered">
         <thead>
           <tr>
+            <th>Candidato (userId)</th>
             <th>Vacante</th>
-            <th>Candidato (ID)</th>
             <th>CV</th>
-            <th>Estado</th>
-            <th>Cambiar estado</th>
+            <th>Status</th>
             <th>Fecha</th>
           </tr>
         </thead>
         <tbody>
-          {apps.map(app => (
+          {apps.map((app) => (
             <tr key={app.id}>
-              <td>{app.vacancy?.title || app.vacancyId}</td>
               <td>{app.userId}</td>
+              <td>{app.vacancy?.title || app.vacancyId}</td>
               <td>
-                <a href={app.resumeUrl} target="_blank" rel="noopener noreferrer">
-                  Ver CV
-                </a>
+                {app.resumeUrl ? (
+                  <a href={app.resumeUrl} target="_blank" rel="noopener noreferrer">
+                    Ver CV
+                  </a>
+                ) : (
+                  "Sin CV"
+                )}
               </td>
-              <td><b>{app.status}</b></td>
-              <td>
-                <select
-                  value={app.status}
-                  onChange={e => updateStatus(app.id, e.target.value)}
-                  className="form-select"
-                  style={{ width: 130 }}
-                >
-                  <option value="PENDIENTE">PENDIENTE</option>
-                  <option value="APROBADO">APROBADO</option>
-                  <option value="RECHAZADO">RECHAZADO</option>
-                </select>
-              </td>
-              <td>{app.createdAt && new Date(app.createdAt).toLocaleString()}</td>
+              <td>{app.status}</td>
+              <td>{app.createdAt ? new Date(app.createdAt).toLocaleString() : ""}</td>
             </tr>
           ))}
         </tbody>
