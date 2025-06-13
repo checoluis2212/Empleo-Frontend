@@ -8,20 +8,24 @@ const AuthContext = createContext();
  * En localStorage guardaremos:
  *    - token (string)
  *    - role  (string): 'CANDIDATE' o 'RECRUITER'
+ *    - uid   (string): el ID único de Firestore
  */
 
 export function AuthProvider({ children }) {
   const [token, setToken] = useState(null);
   const [role, setRole] = useState(null);
+  const [uid, setUid] = useState(null); // <--- NUEVO
   const nav = useNavigate();
 
   // Al montar, leer de localStorage
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
     const storedRole = localStorage.getItem('role');
-    if (storedToken && storedRole) {
+    const storedUid = localStorage.getItem('uid'); // <--- NUEVO
+    if (storedToken && storedRole && storedUid) {
       setToken(storedToken);
       setRole(storedRole);
+      setUid(storedUid); // <--- NUEVO
     }
   }, []);
 
@@ -39,25 +43,29 @@ export function AuthProvider({ children }) {
     }
 
     const body = await res.json();
-    // body = { token: '...', role: 'CANDIDATE' }
+    // body = { token: '...', role: 'CANDIDATE', uid: '...' }
     setToken(body.token);
     setRole(body.role);
+    setUid(body.uid); // <--- NUEVO
 
     localStorage.setItem('token', body.token);
     localStorage.setItem('role', body.role);
+    localStorage.setItem('uid', body.uid); // <--- NUEVO
   }
 
   // Función para hacer logout
   function logout() {
     setToken(null);
     setRole(null);
+    setUid(null); // <--- NUEVO
     localStorage.removeItem('token');
     localStorage.removeItem('role');
+    localStorage.removeItem('uid'); // <--- NUEVO
     nav('/auth/login');
   }
 
   return (
-    <AuthContext.Provider value={{ token, role, login, logout }}>
+    <AuthContext.Provider value={{ token, role, uid, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

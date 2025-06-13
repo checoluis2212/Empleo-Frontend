@@ -8,14 +8,30 @@ export default function Register() {
   const [errorMessage, setErrorMessage] = React.useState('');
   const nav = useNavigate();
 
+  // Detecta utm_source/utm_medium o asigna 'direct'
+  function getSignupSource() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('utm_source')) {
+      return params.get('utm_source');
+    }
+    if (params.get('utm_medium')) {
+      return params.get('utm_medium');
+    }
+    return 'direct'; // Valor por defecto si no hay nada
+  }
+
   const onSubmit = async (data) => {
     try {
       setErrorMessage('');
-      // data = { email, password, role }
+      // Añadir signupSource (fuente/medio)
+      const payload = {
+        ...data,
+        signupSource: getSignupSource(),
+      };
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify(payload),
       });
 
       if (!res.ok) {
